@@ -229,7 +229,7 @@ def split_mnist(total=1000):
     pattern = re.compile("\.(.+?).jpg$")
     for fi in files:
         ff = re.findall(pattern, fi)
-        if int(ff[0]) < 100:
+        if int(ff[0]) < total/10:
             oldfile = os.path.join(image_path, fi)
             newfile = os.path.join(out_path, fi)
             shutil.copyfile(oldfile, newfile)
@@ -321,7 +321,7 @@ def evaluate(network, test_dataset, test_label):
 def train_and_evaluate():
     path = './mnist-1000'
     data, label = get_dataset(path)
-    X_train, X_test, y_train, y_test = model_selection.train_test_split(data, label, test_size=0.3)
+    X_train, X_test, y_train, y_test = model_selection.train_test_split(data, label, test_size=0.3, random_state=1)
     last_error_ratio = 1.0
     epoch = 0
     network = Network([784, 300, 10])
@@ -371,7 +371,7 @@ def gradient_check(network, sample_feature, sample_label):
 
 
 if __name__ == '__main__':
-    # split_mnist()
-    train_and_evaluate()
+    split_mnist(total=10000)
+    # train_and_evaluate()
     # print(datetime.datetime.now())
     # print(label)

@@ -1,5 +1,6 @@
 # 向量化实现全连接人工神经网络
 import numpy as np
+from bp import *
 
 
 class FullConnectedLayer(object):
@@ -8,7 +9,7 @@ class FullConnectedLayer(object):
         self.output_size = output_size
         self.activator = activator
         self.W = np.random.uniform(-0.1, 0.1, (output_size, input_size))
-        self.b = np.zeros((output_size, 1))
+        self.b = np.zeros((output_size,))
         self.output = np.zeros((output_size, 1))
 
     def __str__(self):
@@ -20,7 +21,10 @@ class FullConnectedLayer(object):
         self.output = self.activator.forward(np.dot(self.W, input_array) + self.b)
 
     def backward(self, delta_array):
-        pass
+        self.delta = self.activator.backward(self.input) * np.dot(
+            self.W.T, delta_array)
+        self.W_grad = np.dot(delta_array.reshape(len(delta_array), 1), self.input.T.reshape(1, len(self.input)))
+        self.b_grad = delta_array
 
     def update(self, learning_rate):
         self.W += self.W_grad * learning_rate
@@ -56,14 +60,39 @@ class Network(object):
     def train_one_sample(self, label, sample, rate):
         self.predict(sample)
         self.calc_gradient(label)
-        self.update_weight(range)
+        self.update_weight(rate)
 
     def calc_gradient(self, label):
-        pass
+        delta = self.layers[-1].activator.backward(
+            self.layers[-1].output
+        ) * (label - self.layers[-1].output)
+        for layer in self.layers[::-1]:
+            layer.backward(delta)
+            delta = layer.delta
+        return delta
 
     def update_weight(self, rate):
-        pass
+        for layer in self.layers:
+            layer.update(rate)
+
+
+def train_and_evaluate():
+    path = './mnist-10000'
+    data, label = get_dataset(path)
+    X_train, X_test, y_train, y_test = model_selection.train_test_split(data, label, test_size=0.3, random_state=1)
+    epoch = 0
+    network = Network([784, 300, 100, 10])
+    min_error = 1
+    while True:
+        epoch += 1
+        network.train(y_train, X_train, 0.01, 1)
+        error_ratio = evaluate(network, X_test, y_test)
+        print('%s epoch %d finished, error ratio is %f' % (datetime.datetime.now(), epoch, error_ratio))
+        if error_ratio < min_error:
+            min_error = error_ratio
+        if epoch % 10 == 0:
+            print('%s after epoch %d, min error ratio is %f' % (datetime.datetime.now(), epoch, min_error))
 
 
 if __name__ == "__main__":
-    pass
+    train_and_evaluate()

@@ -81,5 +81,5 @@ def fc_test():
 
 if __name__ == "__main__":
     # fc_test()
-    # sklearn_mlp()
-    tensorflow_test()
+    sklearn_mlp()
+    # tensorflow_test()

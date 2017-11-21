@@ -1,7 +1,6 @@
 # bp神经网络
 import datetime
 import itertools
-import os
 import re
 import shutil
 import struct
@@ -229,7 +228,7 @@ def split_mnist(total=1000):
     pattern = re.compile("\.(.+?).jpg$")
     for fi in files:
         ff = re.findall(pattern, fi)
-        if int(ff[0]) < total/10:
+        if int(ff[0]) < total / 10:
             oldfile = os.path.join(image_path, fi)
             newfile = os.path.join(out_path, fi)
             shutil.copyfile(oldfile, newfile)
@@ -370,8 +369,16 @@ def gradient_check(network, sample_feature, sample_label):
             expected_gradient, actual_gradient))
 
 
+def gradient_check_test():
+    net = Network([2, 2, 2])
+    sample_feature = [0.9, 0.1]
+    sample_label = [0.9, 0.1]
+    gradient_check(net, sample_feature, sample_label)
+
+
 if __name__ == '__main__':
-    split_mnist(total=10000)
+    gradient_check_test()
+    # split_mnist(total=10000)
     # train_and_evaluate()
     # print(datetime.datetime.now())
     # print(label)

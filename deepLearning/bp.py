@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image
 from numpy import *
 from sklearn import model_selection
-
+import os
 
 def sigmoid(inx):
     return 1.0 / (1.0 + exp(-inx))
@@ -224,6 +224,8 @@ class Network(object):
 def split_mnist(total=1000):
     image_path = 'E:/BaiduNetdiskDownload/mnist/mnist'
     out_path = 'E:/BaiduNetdiskDownload/mnist/mnist-' + str(total)
+    start_time = datetime.datetime.now()
+    print("start split mnist-images:{}".format(start_time.strftime("%Y-%m-%d %H:%M:%S")))
     files = os.listdir(image_path)
     pattern = re.compile("\.(.+?).jpg$")
     for fi in files:
@@ -233,6 +235,10 @@ def split_mnist(total=1000):
             newfile = os.path.join(out_path, fi)
             shutil.copyfile(oldfile, newfile)
         print(ff)
+    end_time = datetime.datetime.now()
+    print("end split mnist-images:{}".format(end_time.strftime("%Y-%m-%d %H:%M:%S")))
+    print("used total time:{} seconds".format((end_time-start_time).seconds))
+
 
 
 class Loader(object):
@@ -377,8 +383,8 @@ def gradient_check_test():
 
 
 if __name__ == '__main__':
-    gradient_check_test()
-    # split_mnist(total=10000)
+    # gradient_check_test()
+    split_mnist(total=20000)
     # train_and_evaluate()
     # print(datetime.datetime.now())
     # print(label)
